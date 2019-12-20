@@ -13,20 +13,20 @@
   >
     <template v-slot:top>
       <v-toolbar flat color="white">
-        <v-toolbar-title>存储容量{{space}}</v-toolbar-title>
+        <v-toolbar-title>剩余容量{{space}}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
           append-icon="search"
-          label="Search"
+          label="搜索"
           single-line
           hide-details
-          style="margin-right: 1%"
+          style="margin-right: 1%;width: 30%"
         ></v-text-field>
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ on }">
             <v-btn color="primary" dark class="mb-2" v-on="on">
-              上传文件
+              上传
               <v-icon>
                 file_upload
               </v-icon>
@@ -87,10 +87,11 @@
                           <td>
                             <v-progress-circular
                               :rotate="360"
-                              :value="item.upload"
-                              color="teal"
+                              :value="process(item)"
+                              size="40"
+                              color="lime"
                             >
-                              {{ item.upload/3.6 }}%
+                              {{ process(item) }}%
                             </v-progress-circular>
                           </td>
                         </tr>
@@ -231,9 +232,7 @@ export default {
 
     close() {
       this.dialog = false;
-      setTimeout(() => {
-        this.editedIndex = -1;
-      }, 300);
+      this.files=[];
     },
 
     save() {
@@ -260,13 +259,22 @@ export default {
           .then(
             (res) => {
               if (res.status === 200) {
-                alert('上传成功');
                 this.initialize();
-              } else alert('上传异常');
+              } else alert(`${this.files[i].name}上传异常`);
             },
           )
           .catch();
       }
+    },
+
+    process(item) {
+      let value = 0;
+      if (typeof (item.upload) !== 'number') {
+        value = 0;
+      } else {
+        value = Math.floor(item.upload / 3.6);
+      }
+      return value;
     },
   },
 };
