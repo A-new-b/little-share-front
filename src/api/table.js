@@ -1,36 +1,35 @@
 import { axios, axiosFile } from './request';
-import { api } from './tools';
 
 export function getSpace() {
   return axios({
-    url: `${api}/maxSpace`,
+    url: `maxSpace`,
     method: 'get',
   });
 }
 
 export function getFileList() {
   return axios({
-    url: `${api}/files`,
+    url: `files`,
     method: 'get',
   });
 }
 
 export function deleteFile(name) {
   return axios({
-    url: `${api}/files/${name}`,
+    url: `files/${name}`,
     method: 'delete',
   });
 }
 
 export function getFile(name) {
   return axios({
-    url: `${api}/files/${name}`,
+    url: `files/${name}`,
     method: 'get',
   });
 }
 export function postFlie(formData, callback1) {
   return axiosFile({
-    url: `${api}/upload`,
+    url: `upload`,
     method: 'post',
     data: formData,
     onUploadProgress(progressEvent) {

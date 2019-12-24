@@ -1,1 +1,1 @@
-export var api = '/api';
+export var api = '';
