@@ -14,7 +14,7 @@
     <template v-slot:top>
       <v-toolbar flat color="white">
         <v-toolbar-title>剩余容量{{space}}</v-toolbar-title>
-        <v-spacer></v-spacer>
+        <v-spacer/>
         <v-text-field
           v-model="search"
           append-icon="search"
@@ -22,8 +22,8 @@
           single-line
           hide-details
           style="margin-right: 1%;width: 30%"
-        ></v-text-field>
-        <v-dialog v-model="dialog" max-width="500px">
+        />
+        <v-dialog v-model="dialog" max-width="fit-content">
           <template v-slot:activator="{ on }">
             <v-btn color="primary" dark class="mb-2" v-on="on">
               上传
@@ -78,12 +78,16 @@
                         <thead>
                         <tr>
                           <th class="text-left">文件名</th>
-                          <th class="text-left">进度条</th>
+                          <th class="text-left">文件大小</th>
+                          <th class="text-left">保存时长</th>
+                          <th class="text-left">上传进度</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr v-for="item in files" :key="item.name">
-                          <td>{{ item.name }}</td>
+                          <td>{{item.name }}</td>
+                          <td>{{bytesToString(item.size)}}</td>
+                          <td>{{secondsToReadable(calculate_last_time_seconds(item.time,space))}}</td>
                           <td>
                             <v-progress-circular
                               :rotate="360"
@@ -104,7 +108,7 @@
             </v-card-text>
 
             <v-card-actions>
-              <v-spacer></v-spacer>
+              <v-spacer/>
               <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
               <v-btn color="blue darken-1" text @click="save">Save</v-btn>
             </v-card-actions>
@@ -128,7 +132,7 @@
       暂无文件
     </template>
   </v-data-table>
-    <v-pagination v-model="page" :length="pageCount"></v-pagination>
+    <v-pagination v-model="page" :length="pageCount"/>
   </div>
 </template>
 
@@ -137,7 +141,7 @@ import Vue from 'vue';
 import {
   getFileList, getSpace, postFlie, deleteFile, getFile,
 } from '../api/table';
-import { bytesToString, secondsToReadable } from '../tools/tools';
+import { bytesToString, secondsToReadable, calculate_last_time_seconds } from '../tools/tools';
 
 
 export default {
@@ -165,7 +169,9 @@ export default {
     loadingTable: false,
   }),
 
-  computed: {},
+  computed: {
+
+  },
 
   watch: {
     dialog(val) {
@@ -179,6 +185,9 @@ export default {
   },
 
   methods: {
+    bytesToString,
+    secondsToReadable,
+    calculate_last_time_seconds,
     initialize() {
       getSpace()
         .then(
@@ -197,7 +206,6 @@ export default {
             console.log(res);
             if (res.status === 200) {
               this.desserts = res.data;
-              // eslint-disable-next-line no-restricted-syntax
               for (const item of this.desserts) {
                 item.byte = bytesToString(item.FileSizeBytes);
                 item.time = secondsToReadable(item.FileSurplusKeepSeconds);
@@ -237,7 +245,6 @@ export default {
 
     save() {
       this.loadingTable = true;
-      // eslint-disable-next-line no-restricted-syntax
       for (const file of this.files) {
         const formData = new FormData();
         formData.append('file', file);

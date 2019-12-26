@@ -42,3 +42,12 @@ export function secondsToReadable(seconds) {
   }
   return 'less than a minute'; // 'just now' //or other string you like;
 }
+
+export function calculate_last_time_seconds(size, spare_space_bytes) {
+  let store_for_days = spare_space_bytes / size;
+  if (store_for_days > 400) {
+    return null;// forever.
+  } else {
+    return Math.floor(store_for_days * 24 * 3600)
+  }
+}
