@@ -37,7 +37,6 @@
               <span class="headline">上传文件</span>
             </v-card-title>
 
-            <v-card-text>
               <v-container>
                 <v-col>
                   <v-col>
@@ -78,9 +77,10 @@
                         <thead>
                         <tr>
                           <th class="text-left">文件名</th>
-                          <th class="text-left">文件大小</th>
-                          <th class="text-left">保存时长</th>
-                          <th class="text-left">上传进度</th>
+                          <th class="text-left">大小</th>
+                          <th class="text-left">时长</th>
+                          <th class="text-left">进度</th>
+                          <th class="text-left">取消</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -105,7 +105,6 @@
                   </v-col>
                 </v-col>
               </v-container>
-            </v-card-text>
 
             <v-card-actions>
               <v-spacer/>
