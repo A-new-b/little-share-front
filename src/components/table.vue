@@ -50,6 +50,7 @@
                       prepend-icon="mdi-paperclip"
                       outlined
                       :show-size="1000"
+                      @change="filePropertyFix"
                     >
                       <template v-slot:selection="{ index, text }">
                         <v-chip
@@ -87,7 +88,9 @@
                         <tr v-for="item in files" :key="item.name">
                           <td>{{item.name }}</td>
                           <td>{{bytesToString(item.size)}}</td>
-                          <td>{{secondsToReadable(calculate_last_time_seconds(item.time,space))}}</td>
+                          <td>{{secondsToReadable(
+  calculateLastTimeSeconds(item.time,space))
+                            }}</td>
                           <td>
                             <v-progress-circular
                               :rotate="360"
@@ -97,6 +100,13 @@
                             >
                               {{ process(item) }}%
                             </v-progress-circular>
+                          </td>
+                          <td>
+                            <v-btn icon :disabled="item.cancel" @click="cancelRequest(item)">
+                              <v-icon color="red">
+                                close
+                              </v-icon>
+                            </v-btn>
                           </td>
                         </tr>
                         </tbody>
@@ -137,11 +147,12 @@
 
 <script>
 import Vue from 'vue';
+import axios from 'axios';
 import {
   getFileList, getSpace, postFlie, deleteFile, getFile,
 } from '../api/table';
-import { bytesToString, secondsToReadable, calculate_last_time_seconds } from '../tools/tools';
 
+import { bytesToString, secondsToReadable, calculateLastTimeSeconds } from '../tools/tools';
 
 export default {
   data: () => ({
@@ -166,6 +177,7 @@ export default {
     search: '',
     files: [],
     loadingTable: false,
+    source: axios.CancelToken.source(),
   }),
 
   computed: {
@@ -186,7 +198,7 @@ export default {
   methods: {
     bytesToString,
     secondsToReadable,
-    calculate_last_time_seconds,
+    calculateLastTimeSeconds,
     initialize() {
       getSpace()
         .then(
@@ -239,7 +251,7 @@ export default {
 
     close() {
       this.dialog = false;
-      this.files=[];
+      this.files = [];
     },
 
     save() {
@@ -248,6 +260,8 @@ export default {
         const formData = new FormData();
         formData.append('file', file);
         const i = this.files.indexOf(file);
+        file.cancel = false;// 按钮可以使用
+        this.source = axios.CancelToken.source();
         postFlie(formData,
           (res) => {
             const { loaded } = res;
@@ -261,7 +275,8 @@ export default {
               item.upload = 360;
               Vue.set(this.files, i, item);
             }
-          })
+          },
+          this.source.token)
           .then(
             (res) => {
               if (res.status === 200) {
@@ -269,7 +284,12 @@ export default {
               } else alert(`${this.files[i].name}上传异常`);
             },
           )
-          .catch();
+          .catch()
+          .finally(
+            () => {
+              file.cancel = true;
+            },
+          );
       }
     },
 
@@ -281,6 +301,18 @@ export default {
         value = Math.floor(item.upload / 3.6);
       }
       return value;
+    },
+
+    filePropertyFix() {
+      for (const file of this.files) {
+        file.upload = 0;
+        file.cancel = true;// 使按钮禁用
+      }
+    },
+
+    cancelRequest(item) {
+      this.source.cancel('文件传输已取消');
+      item.upload = 0;
     },
   },
 };

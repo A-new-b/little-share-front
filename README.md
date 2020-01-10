@@ -1,29 +1,4 @@
-# front_vuetify
+# 使用事项
 
-## Project setup
-```
-yarn install
-```
+## 为调试方便，个人在table.js中使用了绝对路径并使用了代理转发，如要改为相对路径请在tools.js中将api = '/api';改为api='';个人的小癖好，不喜勿喷。
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
-
-### Compiles and minifies for production
-```
-yarn run build
-```
-
-### Run your tests
-```
-yarn run test
-```
-
-### Lints and fixes files
-```
-yarn run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

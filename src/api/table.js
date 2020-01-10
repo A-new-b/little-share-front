@@ -28,11 +28,12 @@ export function getFile(name) {
     method: 'get',
   });
 }
-export function postFlie(formData, callback1) {
+export function postFlie(formData, callback1, cancel) {
   return axiosFile({
     url: `${api}/upload`,
     method: 'post',
     data: formData,
+    cancelToken: cancel,
     onUploadProgress(progressEvent) {
       if (progressEvent.lengthComputable) {
         callback1(progressEvent);
